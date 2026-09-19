@@ -1,0 +1,88 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                String          @id @default(cuid())
+  firebaseUid       String          @unique
+  email             String?         @unique
+  phoneNumber       String?         @unique
+  displayName       String?
+  photoURL          String?
+  is_subscribed     Boolean         @default(false)
+  has_course_access Boolean         @default(false)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  bookings          Booking[]
+  transactions      Transaction[]
+  raffleWins        RaffleLedger[]
+
+  @@index([is_subscribed])
+}
+
+model Booking {
+  id             String        @id @default(cuid())
+  userId         String
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type           String        @default("REMOTE") // "REMOTE" | "FACE_TO_FACE"
+  status         String        @default("CONFIRMED") // "PENDING" | "CONFIRMED" | "COMPLETED" | "CANCELLED"
+  title          String        @default("Private Culinary Consultation")
+  durationHours  Float         @default(1.0)
+  scheduledAt    DateTime
+  completedAt    DateTime?
+  notes          String?
+  isRaffleReward Boolean       @default(false)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([type, status])
+  @@index([scheduledAt])
+}
+
+model Transaction {
+  id                 String   @id @default(cuid())
+  userId             String
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  merchantRequestId  String?
+  checkoutRequestId  String?  @unique
+  mpesaReceiptNumber String?  @unique
+  amount             Float
+  phoneNumber        String
+  status             String   @default("PENDING") // "PENDING" | "SUCCESS" | "FAILED" | "CANCELLED"
+  resultCode         Int?
+  resultDesc         String?
+  transactionType    String   @default("SUBSCRIPTION") // "SUBSCRIPTION" | "COURSE_ACCESS" | "CONSULTATION_BOOKING"
+  rawCallbackData    String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([userId])
+  @@index([checkoutRequestId])
+  @@index([status])
+}
+
+model RaffleLedger {
+  id                 String   @id @default(cuid())
+  month              Int      // Calendar month 1 - 12
+  year               Int      // Calendar year e.g. 2026
+  totalRemoteHours   Float    // Sum of previous month's remote consultation hours
+  poolHours          Float    // 5% of totalRemoteHours
+  awardedHours       Float    @default(1.0) // 1-hour free session awarded
+  winnerId           String
+  winner             User     @relation(fields: [winnerId], references: [id], onDelete: Cascade)
+  status             String   @default("AWARDED") // "CALCULATED" | "AWARDED" | "CLAIMED"
+  awardedBookingId   String?
+  notes              String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@unique([month, year])
+  @@index([winnerId])
+}

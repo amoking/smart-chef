@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #0d0e12;
+  --foreground: #f4f4f6;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Custom scrollbar for mobile luxury feel */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #12131a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2e313d;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #f37a2b;
+}
+
+/* Glassmorphism helpers */
+.glass-panel {
+  background: rgba(24, 25, 32, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-pill {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.gold-gradient {
+  background: linear-gradient(135deg, #f7ba3e 0%, #f37a2b 50%, #b87333 100%);
+}
+
+.emerald-gradient {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
