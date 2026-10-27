@@ -55,8 +55,8 @@ export default function App() {
         onOpenProfile={() => setActiveTab("profile")}
       />
 
-      {/* Main Content Area (Max width md for mobile-first experience) */}
-      <div className="w-full max-w-md mx-auto px-4 flex-1 pt-2">
+      {/* Main Content Area (Mobile-first with responsive expansion for split-screen views) */}
+      <div className="w-full max-w-md md:max-w-3xl mx-auto px-4 flex-1 pt-2">
         <AnimatePresence mode="wait">
           {activeTab === "home" && (
             <motion.div

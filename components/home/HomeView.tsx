@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { TabType } from "@/components/layout/BottomNav";
+import { CaseStudyHighlight } from "@/components/home/CaseStudyHighlight";
 import {
   Video,
   MapPin,
@@ -193,6 +194,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
         <ArrowUpRight className="w-4 h-4 text-purple-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform shrink-0" />
       </div>
+
+      {/* Expedition & Urban Consultancy Case Study Highlight */}
+      <CaseStudyHighlight />
 
       {/* Quick Action Cards Grid */}
       <div>
