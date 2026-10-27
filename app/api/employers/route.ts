@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-export interface ExtractedRequirementItem {
+interface ExtractedRequirementItem {
   id: string;
   label: string;
   category: "Certification" | "Culinary & Technical" | "Operations & Capacity" | "Perks & Schedule";
@@ -88,7 +88,7 @@ const HOSPITALITY_EXTRACTION_RULES: {
   },
 ];
 
-export function extractStandardizedRequirements(
+function extractStandardizedRequirements(
   description: string,
   title = "",
   facilityType = ""

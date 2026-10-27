@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-export type AdminStageType =
+type AdminStageType =
   | "SHORTLISTED"
   | "ADMIN_VETTING"
   | "EMPLOYER_REVIEW"
