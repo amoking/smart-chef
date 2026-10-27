@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 type AdminStageType =
   | "SHORTLISTED"
   | "ADMIN_VETTING"
@@ -245,7 +247,9 @@ function hydrateApplications(
   });
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const statusFilter = req.nextUrl.searchParams.get("status");
+  void statusFilter;
   try {
     const anyPrisma = prisma as any;
     if (
