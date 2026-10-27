@@ -1,11 +1,16 @@
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
+const db = prisma as any;
 
 async function main() {
   console.log("Seeding database with initial users, bookings, and Daraja transactions...");
 
   // Clean previous records
+  if (db.applications) await db.applications.deleteMany({});
+  if (db.job_Listings) await db.job_Listings.deleteMany({});
+  if (db.employer_Profiles) await db.employer_Profiles.deleteMany({});
+  if (db.prospective_Employees) await db.prospective_Employees.deleteMany({});
   await prisma.raffleLedger.deleteMany({});
   await prisma.booking.deleteMany({});
   await prisma.transaction.deleteMany({});
@@ -210,6 +215,114 @@ async function main() {
   });
 
   console.log("M-Pesa Daraja transactions seeded.");
+
+  // 4. Seed Two-Sided Recruitment Marketplace
+  const peAmina = await db.prospective_Employees.create({
+    data: {
+      userId: userAmina.id,
+      full_name: "Amina Hassan",
+      education_level: "Diploma",
+      phone: "+254733445566",
+      email: "amina.hassan@example.com",
+      qualifications: "Diploma in Food & Beverage Production and Service (Kenya Utalii College), HACCP Level 2 Certified",
+      experience: "4 years as Commis & Demi Chef de Partie in coastal resorts and boutique hotels in Mombasa and Nairobi.",
+      references: [
+        {
+          name: "Chef Juma Bakari",
+          relationship: "Executive Chef - Serena Beach Resort",
+          phone: "+254712000111",
+          email: "j.bakari@serena-example.co.ke",
+        },
+        {
+          name: "Mary Nduta",
+          relationship: "F&B Manager - Sankara Nairobi",
+          phone: "+254723000222",
+          email: "m.nduta@sankara-example.co.ke",
+        },
+      ],
+      selected_job_categories: ["Kitchen", "Services"],
+      headshot_url: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80",
+      approval_status: "live",
+      linked_training_modules: ["kitchen-hygiene-haccp", "coastal-pastry-mastery", "service-etiquette-101"],
+    },
+  });
+
+  const peBrian = await db.prospective_Employees.create({
+    data: {
+      userId: userBrian.id,
+      full_name: "Brian Omondi",
+      education_level: "Certificate",
+      phone: "+254744556677",
+      email: "brian.omondi@example.com",
+      qualifications: "Certificate in Institutional Catering & Storekeeping, FIFO Inventory Control Certification",
+      experience: "2 years managing dry & cold stores and institutional kitchen prep for a 600-student boarding school.",
+      references: [
+        {
+          name: "Peter Kamau",
+          relationship: "Cateress / Procurement Head - Brookhouse",
+          phone: "+254734000333",
+          email: "p.kamau@school-example.ac.ke",
+        },
+      ],
+      selected_job_categories: ["Stores", "Kitchen", "Housekeeping"],
+      headshot_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
+      approval_status: "pending",
+      linked_training_modules: ["stores-inventory-fifo", "bulk-catering-cost-control"],
+    },
+  });
+
+  const employerNorfolk = await db.employer_Profiles.create({
+    data: {
+      userId: userChefSarah.id,
+      business_name: "Rift Valley Grand Lodge & Conferencing",
+      business_location: "Naivasha, Nakuru County, Kenya",
+      type: "Hotel & Conference Resort",
+      max_catering_capacity: 850,
+      boarding_type: "Residential Hospitality & Full-Board Conferencing",
+      contact_name: "Chef Sarah Wanjiku",
+      contact_details: {
+        phone: "+254711223344",
+        email: "hr@riftvalleygrand-example.co.ke",
+        role: "Culinary Director",
+      },
+      outstanding_fees: 15000.0,
+    },
+  });
+
+  const jobSousChef = await db.job_Listings.create({
+    data: {
+      employer_id: employerNorfolk.id,
+      title: "Junior Sous Chef & Banquet Line Lead",
+      description:
+        "Seeking an energetic Junior Sous Chef to oversee high-volume banquet production (up to 850 covers) and à la carte fine dining service.",
+      AI_suggested_features: [
+        "HACCP & Food Safety Compliance",
+        "High-Volume Banquet Execution (500+ Covers)",
+        "Menu Costing & BOH Waste Reduction",
+        "Staff Accommodation & Meals Provided",
+      ],
+      location_type: "coords",
+      location: "Moi South Lake Road, Naivasha, Kenya",
+      location_coords: { lat: -0.7852, lng: 36.3534 },
+      salary_range: "KES 55,000 - 75,000 / month",
+      work_schedule: "Full-Time, 6 Days/Week (Rotating Shifts)",
+      accepts_work_placement: true,
+      approval_status: "live",
+    },
+  });
+
+  await db.applications.create({
+    data: {
+      prospective_employee_id: peAmina.id,
+      job_listing_id: jobSousChef.id,
+      stage: "INTERVIEW_SCHEDULED",
+      managed_by_admin_id: "admin_smart_chef_001",
+      admin_notes: "Candidate completed Smart Chef Kitchen Hygiene & Service modules with 96% score. Employer qualifies for 5% placement discount.",
+      interview_scheduled_at: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+    },
+  });
+
+  console.log("Two-sided recruitment marketplace seeded (PEs, Employer, Job Listing, and Admin-managed Application).");
   console.log("Seeding complete!");
 }
 

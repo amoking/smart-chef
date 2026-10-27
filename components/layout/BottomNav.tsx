@@ -7,10 +7,11 @@ import {
   CalendarDays,
   Sparkles,
   GraduationCap,
+  Briefcase,
   User as UserIcon,
 } from "lucide-react";
 
-export type TabType = "home" | "consult" | "courses" | "raffle" | "profile";
+export type TabType = "home" | "consult" | "courses" | "careers" | "raffle" | "profile";
 
 interface BottomNavProps {
   activeTab: TabType;
@@ -27,6 +28,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
     { id: "home" as TabType, label: "Home", icon: UtensilsCrossed },
     { id: "consult" as TabType, label: "Book", icon: CalendarDays },
     { id: "courses" as TabType, label: "Training", icon: GraduationCap },
+    { id: "careers" as TabType, label: "Careers", icon: Briefcase },
     {
       id: "raffle" as TabType,
       label: "5% Raffle",

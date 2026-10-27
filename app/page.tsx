@@ -8,6 +8,7 @@ import { TopHeader } from "@/components/layout/TopHeader";
 import { HomeView } from "@/components/home/HomeView";
 import { BookingView } from "@/components/booking/BookingView";
 import { MemberDashboard } from "@/components/dashboard/MemberDashboard";
+import { ProspectiveEmployeeHub } from "@/components/recruitment/ProspectiveEmployeeHub";
 import { RaffleView } from "@/components/raffle/RaffleView";
 import { ProfileView } from "@/components/profile/ProfileView";
 import { AuthModal } from "@/components/auth/AuthModal";
@@ -91,6 +92,18 @@ export default function App() {
               transition={{ duration: 0.2 }}
             >
               <MemberDashboard onOpenAuth={() => setIsAuthOpen(true)} />
+            </motion.div>
+          )}
+
+          {activeTab === "careers" && (
+            <motion.div
+              key="careers"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+            >
+              <ProspectiveEmployeeHub />
             </motion.div>
           )}
 

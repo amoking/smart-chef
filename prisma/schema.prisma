@@ -9,22 +9,65 @@ generator client {
 }
 
 model User {
-  id                String          @id @default(cuid())
-  firebaseUid       String          @unique
-  email             String?         @unique
-  phoneNumber       String?         @unique
-  displayName       String?
-  photoURL          String?
-  is_subscribed     Boolean         @default(false)
-  has_course_access Boolean         @default(false)
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
+  id                  String                 @id @default(cuid())
+  firebaseUid         String                 @unique
+  email               String?                @unique
+  phoneNumber         String?                @unique
+  displayName         String?
+  photoURL            String?
+  role                UserRole               @default(MEMBER)
+  is_subscribed       Boolean                @default(false)
+  has_course_access   Boolean                @default(false)
+  createdAt           DateTime               @default(now())
+  updatedAt           DateTime               @updatedAt
 
-  bookings          Booking[]
-  transactions      Transaction[]
-  raffleWins        RaffleLedger[]
+  bookings            Booking[]
+  transactions        Transaction[]
+  raffleWins          RaffleLedger[]
+  prospectiveEmployee Prospective_Employees?
+  employerProfile     Employer_Profiles?
 
   @@index([is_subscribed])
+  @@index([role])
+}
+
+enum UserRole {
+  MEMBER
+  PROSPECTIVE_EMPLOYEE
+  EMPLOYER
+  ADMIN
+}
+
+enum KenyanEducationLevel {
+  KCPE
+  KCSE
+  Certificate
+  Diploma
+  Degree
+}
+
+enum ApprovalStatus {
+  pending
+  live
+  rejected
+}
+
+enum JobLocationType {
+  coords
+  remote
+  hybrid
+}
+
+enum RecruitmentStage {
+  SHORTLISTED
+  ADMIN_VETTING
+  EMPLOYER_REVIEW
+  INTERVIEW_SCHEDULED
+  TRIAL_SHIFT
+  OFFER_EXTENDED
+  PLACED
+  REJECTED
+  WITHDRAWN
 }
 
 model Booking {
@@ -86,4 +129,102 @@ model RaffleLedger {
 
   @@unique([month, year])
   @@index([winnerId])
+}
+
+// ============================================================================
+// TWO-SIDED RECRUITMENT MARKETPLACE MODELS
+// ============================================================================
+
+model Prospective_Employees {
+  id                      String               @id @default(cuid())
+  userId                  String?              @unique
+  user                    User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
+  full_name               String
+  education_level         KenyanEducationLevel
+  phone                   String               @unique
+  email                   String?              @unique
+  qualifications          String
+  experience              String
+  references              Json                 // Array of [{ name, relationship, phone, email, organization }]
+  selected_job_categories String[]             // e.g. ["Kitchen", "Services", "Housekeeping", "Stores"]
+  headshot_url            String?
+  approval_status         ApprovalStatus       @default(pending)
+  linked_training_modules String[]             // Completed Smart Chef module IDs / slugs
+  createdAt               DateTime             @default(now())
+  updatedAt               DateTime             @updatedAt
+
+  applications            Applications[]
+
+  @@index([approval_status])
+  @@index([education_level])
+  @@index([selected_job_categories], type: Gin)
+  @@index([linked_training_modules], type: Gin)
+}
+
+model Employer_Profiles {
+  id                    String         @id @default(cuid())
+  userId                String?        @unique
+  user                  User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  business_name         String?
+  business_location     String
+  type                  String         // e.g. "Hotel", "Restaurant", "School", "Hospital", "Outside Catering"
+  max_catering_capacity Int
+  boarding_type         String         // e.g. "Boarding", "Day", "Mixed", "Non-Residential", "Hospitality"
+  contact_name          String
+  contact_details       Json           // Structured contact details: { phone, email, alternative_phone, role }
+  outstanding_fees      Float          @default(0.0)
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+
+  job_listings          Job_Listings[]
+
+  @@index([type])
+  @@index([business_location])
+  @@index([outstanding_fees])
+}
+
+model Job_Listings {
+  id                     String            @id @default(cuid())
+  employer_id            String
+  employer               Employer_Profiles @relation(fields: [employer_id], references: [id], onDelete: Cascade)
+  title                  String
+  description            String
+  AI_suggested_features  String[]          // AI-curated job features, skill tags, and compensation perks
+  location_type          JobLocationType   @default(coords) // "coords" | "remote" | "hybrid"
+  location               String            // Display address or "Remote" / "Hybrid"
+  location_coords        Json?             // Optional { lat: Float, lng: Float } when location_type is coords/hybrid
+  salary_range           String            // e.g. "KES 35,000 - 50,000 / month"
+  work_schedule          String            // e.g. "Full-Time, 6 Days/Week (Shift System)"
+  accepts_work_placement Boolean           @default(false) // Grants 5% fee discount when true
+  approval_status        ApprovalStatus    @default(pending)
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+
+  applications           Applications[]
+
+  @@index([employer_id])
+  @@index([approval_status])
+  @@index([accepts_work_placement])
+  @@index([location_type])
+}
+
+model Applications {
+  id                      String                @id @default(cuid())
+  prospective_employee_id String
+  prospective_employee    Prospective_Employees @relation(fields: [prospective_employee_id], references: [id], onDelete: Cascade)
+  job_listing_id          String
+  job_listing             Job_Listings          @relation(fields: [job_listing_id], references: [id], onDelete: Cascade)
+  stage                   RecruitmentStage      @default(SHORTLISTED)
+  managed_by_admin_id     String                // Strictly Admin-managed recruitment workflow (Admin User ID / Firebase UID)
+  admin_notes             String?
+  interview_scheduled_at  DateTime?
+  placed_at               DateTime?
+  createdAt               DateTime              @default(now())
+  updatedAt               DateTime              @updatedAt
+
+  @@unique([prospective_employee_id, job_listing_id])
+  @@index([prospective_employee_id])
+  @@index([job_listing_id])
+  @@index([stage])
+  @@index([managed_by_admin_id])
 }

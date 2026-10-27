@@ -15,6 +15,7 @@ import {
   Flame,
   ArrowUpRight,
   Clock,
+  Briefcase,
 } from "lucide-react";
 
 interface HomeViewProps {
@@ -108,6 +109,32 @@ export const HomeView: React.FC<HomeViewProps> = ({
           </div>
         </div>
         <ArrowUpRight className="w-4 h-4 text-brand-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform shrink-0" />
+      </div>
+
+      {/* Prospective Employee Onboarding & Talent Hub Callout */}
+      <div
+        onClick={() => onNavigate("careers")}
+        className="p-4 rounded-3xl bg-gradient-to-r from-emerald-600/20 via-teal-500/15 to-transparent border border-emerald-500/30 flex items-center justify-between cursor-pointer hover:border-emerald-500/50 transition-all group shadow-lg"
+      >
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 rounded-2xl bg-emerald-500 text-slate-950 flex items-center justify-center shadow-lg">
+            <Briefcase className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="flex items-center space-x-1.5">
+              <h4 className="text-xs font-bold text-white group-hover:text-emerald-300 transition-colors">
+                Prospective Employee Onboarding & Hub
+              </h4>
+              <span className="text-[9px] bg-emerald-400/20 text-emerald-300 px-1.5 py-0.2 rounded font-bold">
+                New
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-400 mt-0.5">
+              Register your Kenyan qualifications, capture a live headshot & access PE Training.
+            </p>
+          </div>
+        </div>
+        <ArrowUpRight className="w-4 h-4 text-emerald-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform shrink-0" />
       </div>
 
       {/* Quick Action Cards Grid */}
