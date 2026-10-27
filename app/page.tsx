@@ -9,6 +9,8 @@ import { HomeView } from "@/components/home/HomeView";
 import { BookingView } from "@/components/booking/BookingView";
 import { MemberDashboard } from "@/components/dashboard/MemberDashboard";
 import { ProspectiveEmployeeHub } from "@/components/recruitment/ProspectiveEmployeeHub";
+import { EmployerHub } from "@/components/recruitment/EmployerHub";
+import { AdminPlacementDesk } from "@/components/recruitment/AdminPlacementDesk";
 import { RaffleView } from "@/components/raffle/RaffleView";
 import { ProfileView } from "@/components/profile/ProfileView";
 import { AuthModal } from "@/components/auth/AuthModal";
@@ -16,6 +18,9 @@ import { AuthModal } from "@/components/auth/AuthModal";
 export default function App() {
   const { dbUser, setDemoUser } = useAuth();
   const [activeTab, setActiveTab] = useState<TabType>("home");
+  const [careersRoleView, setCareersRoleView] = useState<
+    "employee" | "employer" | "admin"
+  >("admin");
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [availableDemoUsers, setAvailableDemoUsers] = useState<DbUserProfile[]>([]);
 
@@ -62,7 +67,10 @@ export default function App() {
               transition={{ duration: 0.2 }}
             >
               <HomeView
-                onNavigate={(tab) => setActiveTab(tab)}
+                onNavigate={(tab, roleMode) => {
+                  if (roleMode) setCareersRoleView(roleMode);
+                  setActiveTab(tab);
+                }}
                 onOpenAuth={() => setIsAuthOpen(true)}
               />
             </motion.div>
@@ -102,8 +110,48 @@ export default function App() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.2 }}
+              className="space-y-3"
             >
-              <ProspectiveEmployeeHub />
+              {/* Recruitment Marketplace 3-Way Role Switcher */}
+              <div className="grid grid-cols-3 gap-1.5 p-1.5 rounded-2xl bg-chef-card border border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setCareersRoleView("employee")}
+                  className={`py-2 px-2 rounded-xl text-[11px] font-extrabold transition-all ${
+                    careersRoleView === "employee"
+                      ? "bg-brand-500 text-white shadow-glow"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  Talent (PE)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCareersRoleView("employer")}
+                  className={`py-2 px-2 rounded-xl text-[11px] font-extrabold transition-all ${
+                    careersRoleView === "employer"
+                      ? "bg-emerald-500 text-slate-950 shadow-lg"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  Employer Hub
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCareersRoleView("admin")}
+                  className={`py-2 px-2 rounded-xl text-[11px] font-extrabold transition-all ${
+                    careersRoleView === "admin"
+                      ? "bg-purple-500 text-white shadow-lg"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  Admin Desk
+                </button>
+              </div>
+
+              {careersRoleView === "employee" && <ProspectiveEmployeeHub />}
+              {careersRoleView === "employer" && <EmployerHub />}
+              {careersRoleView === "admin" && <AdminPlacementDesk />}
             </motion.div>
           )}
 

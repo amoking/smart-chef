@@ -16,10 +16,15 @@ import {
   ArrowUpRight,
   Clock,
   Briefcase,
+  Building2,
+  ShieldCheck,
 } from "lucide-react";
 
 interface HomeViewProps {
-  onNavigate: (tab: TabType) => void;
+  onNavigate: (
+    tab: TabType,
+    roleMode?: "employee" | "employer" | "admin"
+  ) => void;
   onOpenAuth: () => void;
 }
 
@@ -113,7 +118,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
       {/* Prospective Employee Onboarding & Talent Hub Callout */}
       <div
-        onClick={() => onNavigate("careers")}
+        onClick={() => onNavigate("careers", "employee")}
         className="p-4 rounded-3xl bg-gradient-to-r from-emerald-600/20 via-teal-500/15 to-transparent border border-emerald-500/30 flex items-center justify-between cursor-pointer hover:border-emerald-500/50 transition-all group shadow-lg"
       >
         <div className="flex items-center space-x-3">
@@ -126,7 +131,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 Prospective Employee Onboarding & Hub
               </h4>
               <span className="text-[9px] bg-emerald-400/20 text-emerald-300 px-1.5 py-0.2 rounded font-bold">
-                New
+                Talent
               </span>
             </div>
             <p className="text-[11px] text-slate-400 mt-0.5">
@@ -135,6 +140,58 @@ export const HomeView: React.FC<HomeViewProps> = ({
           </div>
         </div>
         <ArrowUpRight className="w-4 h-4 text-emerald-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform shrink-0" />
+      </div>
+
+      {/* Employer Recruitment Dashboard & AI Job Posting Callout */}
+      <div
+        onClick={() => onNavigate("careers", "employer")}
+        className="p-4 rounded-3xl bg-gradient-to-r from-amber-600/20 via-brand-500/15 to-transparent border border-amber-500/30 flex items-center justify-between cursor-pointer hover:border-amber-500/50 transition-all group shadow-lg"
+      >
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center shadow-lg">
+            <Building2 className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="flex items-center space-x-1.5">
+              <h4 className="text-xs font-bold text-white group-hover:text-amber-300 transition-colors">
+                Employer Hub & AI-Assisted Job Posting
+              </h4>
+              <span className="text-[9px] bg-amber-400/20 text-amber-300 px-1.5 py-0.2 rounded font-bold">
+                5% Discount
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-400 mt-0.5">
+              Onboard your facility, extract job requirements with AI & hire vetted staff.
+            </p>
+          </div>
+        </div>
+        <ArrowUpRight className="w-4 h-4 text-amber-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform shrink-0" />
+      </div>
+
+      {/* Admin Vetting & Placement Desk Callout */}
+      <div
+        onClick={() => onNavigate("careers", "admin")}
+        className="p-4 rounded-3xl bg-gradient-to-r from-purple-600/20 via-indigo-500/15 to-transparent border border-purple-500/30 flex items-center justify-between cursor-pointer hover:border-purple-500/50 transition-all group shadow-lg"
+      >
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 rounded-2xl bg-purple-500 text-white flex items-center justify-center shadow-lg">
+            <ShieldCheck className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="flex items-center space-x-1.5">
+              <h4 className="text-xs font-bold text-white group-hover:text-purple-300 transition-colors">
+                Admin Vetting & Placement Desk
+              </h4>
+              <span className="text-[9px] bg-purple-400/20 text-purple-300 px-1.5 py-0.2 rounded font-bold">
+                Admin Only
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-400 mt-0.5">
+              Verify CVs & references, approve 5% Work Placement jobs & manage pipeline stages.
+            </p>
+          </div>
+        </div>
+        <ArrowUpRight className="w-4 h-4 text-purple-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform shrink-0" />
       </div>
 
       {/* Quick Action Cards Grid */}
