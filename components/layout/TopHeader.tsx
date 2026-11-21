@@ -17,7 +17,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
   const { user, dbUser } = useAuth();
 
   return (
-    <header className="sticky top-0 z-30 w-full max-w-md mx-auto px-4 pt-3 pb-2">
+    <header className="sticky top-0 z-30 w-full max-w-md md:max-w-3xl mx-auto px-4 pt-3 pb-2">
       <div className="glass-panel rounded-2xl border border-white/10 px-4 py-2.5 flex items-center justify-between shadow-lg backdrop-blur-xl bg-chef-dark/80">
         {/* Brand */}
         <div className="flex items-center space-x-2.5">
@@ -27,14 +27,14 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
           <div>
             <div className="flex items-center space-x-1.5">
               <span className="font-black text-sm tracking-tight text-white">
-                SMART CHEF
+                SMART CHEFS
               </span>
               <span className="text-[10px] uppercase font-bold tracking-widest text-brand-400 bg-brand-500/10 px-1.5 py-0.5 rounded border border-brand-500/20">
-                PRO
+                CONSULTANTS
               </span>
             </div>
             <p className="text-[10px] text-slate-400 font-medium">
-              Culinary Art & Mentorship
+              18+ Yrs Catering & Hotel Turnaround
             </p>
           </div>
         </div>
