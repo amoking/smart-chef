@@ -50,8 +50,7 @@ const MANIFESTO_DEPARTMENTS: ManifestoDepartment[] = [
     name: "1. Kitchen & Cost Control",
     badge: "≤ 2% Wastage in 3 Wks",
     icon: ChefHat,
-    image:
-      "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=800&q=80",
+    image: "/images/kenya-estate-catering.jpg",
     accent: "bg-brand-500 text-white border-brand-500/40",
     pills: [
       "Food Cost & Portion Control",
@@ -67,8 +66,7 @@ const MANIFESTO_DEPARTMENTS: ManifestoDepartment[] = [
     name: "2. Service & Sales Staff",
     badge: "Speed & Standards",
     icon: UtensilsCrossed,
-    image:
-      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80",
+    image: "/images/kenya-estate-service.jpg",
     accent: "bg-emerald-500 text-slate-950 border-emerald-500/40",
     pills: [
       "Sales Tactics & Upselling",
@@ -84,8 +82,7 @@ const MANIFESTO_DEPARTMENTS: ManifestoDepartment[] = [
     name: "3. Housekeeping & Laundry",
     badge: "1-Day Ground Audit",
     icon: Shirt,
-    image:
-      "https://images.unsplash.com/photo-1582735689369-4fe89db7114c?auto=format&fit=crop&w=800&q=80",
+    image: "/images/kenya-housekeeping-linen.jpg",
     accent: "bg-sky-500 text-slate-950 border-sky-500/40",
     pills: [
       "Detergent Cost Control",
@@ -101,8 +98,7 @@ const MANIFESTO_DEPARTMENTS: ManifestoDepartment[] = [
     name: "4. Stores & Accountability",
     badge: "Zero-Excuse Control",
     icon: PackageCheck,
-    image:
-      "https://images.unsplash.com/photo-1581349485608-9469926a8e5e?auto=format&fit=crop&w=800&q=80",
+    image: "/images/kenya-catering-stores.jpg",
     accent: "bg-amber-500 text-slate-950 border-amber-500/40",
     pills: [
       "Market Research & Purchases",
@@ -134,8 +130,7 @@ const SPOTLIGHT_CAROUSEL_SERVICES: SpotlightServiceSlide[] = [
     badge: "Talent",
     shortTag: "KCSE/Diploma • Live Headshot • PE Training",
     icon: Briefcase,
-    image:
-      "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=700&q=80",
+    image: "/images/kenya-estate-catering.jpg",
     accentClass: "border-emerald-500/40 text-emerald-300",
     iconBgClass: "bg-emerald-500 text-slate-950",
     onSelect: (nav) => nav("careers", "employee"),
@@ -146,8 +141,7 @@ const SPOTLIGHT_CAROUSEL_SERVICES: SpotlightServiceSlide[] = [
     badge: "5% Discount",
     shortTag: "AI Job Extractor • Map Pin • Hire Vetted Staff",
     icon: Building2,
-    image:
-      "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=700&q=80",
+    image: "/images/kenya-estate-service.jpg",
     accentClass: "border-amber-500/40 text-amber-300",
     iconBgClass: "bg-amber-500 text-slate-950",
     onSelect: (nav) => nav("careers", "employer"),
@@ -158,8 +152,7 @@ const SPOTLIGHT_CAROUSEL_SERVICES: SpotlightServiceSlide[] = [
     badge: "Active Pool",
     shortTag: "Free Monthly 1-Hr Chef Session",
     icon: Sparkles,
-    image:
-      "https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=700&q=80",
+    image: "/images/kenya-catering-stores.jpg",
     accentClass: "border-brand-500/40 text-brand-300",
     iconBgClass: "bg-brand-500 text-white",
     onSelect: (nav) => nav("raffle"),
@@ -170,8 +163,7 @@ const SPOTLIGHT_CAROUSEL_SERVICES: SpotlightServiceSlide[] = [
     badge: "Admin Only",
     shortTag: "CV Vetting • 5% Flags • Stage Pipeline",
     icon: ShieldCheck,
-    image:
-      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=700&q=80",
+    image: "/images/kenya-housekeeping-linen.jpg",
     accentClass: "border-purple-500/40 text-purple-300",
     iconBgClass: "bg-purple-500 text-white",
     onSelect: (nav) => nav("careers", "admin"),
@@ -182,20 +174,18 @@ const VISUAL_ACTION_CARDS = [
   {
     id: "ground-audit",
     title: "1-Day Ground Audit",
-    badge: "On-Site",
+    badge: "Kshs. 200",
     icon: MapPin,
-    image:
-      "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80",
+    image: "/images/kenya-estate-catering.jpg",
     color: "bg-emerald-500 text-slate-950",
     tab: "consult" as TabType,
   },
   {
     id: "remote-consult",
     title: "Remote Advisory",
-    badge: "Live Video",
+    badge: "Kshs. 200",
     icon: Video,
-    image:
-      "https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=600&q=80",
+    image: "/images/kenya-estate-service.jpg",
     color: "bg-brand-500 text-white",
     tab: "consult" as TabType,
   },
@@ -204,18 +194,16 @@ const VISUAL_ACTION_CARDS = [
     title: "3-Week Training",
     badge: "Affordable",
     icon: Crown,
-    image:
-      "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=600&q=80",
+    image: "/images/kenya-catering-stores.jpg",
     color: "bg-amber-500 text-slate-950",
     tab: "courses" as TabType,
   },
   {
     id: "raffle",
     title: "5% Free Raffle",
-    badge: "Small Outlets",
+    badge: "Estate SMEs",
     icon: Sparkles,
-    image:
-      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80",
+    image: "/images/kenya-housekeeping-linen.jpg",
     color: "bg-purple-500 text-white",
     tab: "raffle" as TabType,
   },

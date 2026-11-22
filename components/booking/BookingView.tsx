@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
+import { MpesaModal } from "@/components/mpesa/MpesaModal";
 import {
   Video,
   MapPin,
@@ -12,6 +13,9 @@ import {
   Sparkles,
   Loader2,
   ChevronRight,
+  Timer,
+  Smartphone,
+  CreditCard,
 } from "lucide-react";
 
 import { BookingCalendar } from "./BookingCalendar";
@@ -21,15 +25,18 @@ interface BookingViewProps {
   onOpenAuth: () => void;
 }
 
+const CONSULTATION_FEE_KES = 200;
+const HOLD_DURATION_SECONDS = 15 * 60;
+
 export const BookingView: React.FC<BookingViewProps> = ({
   onBookingCreated,
   onOpenAuth,
 }) => {
-  const { dbUser } = useAuth();
+  const { dbUser, refreshDbUser } = useAuth();
   const [bookingMode, setBookingMode] = useState<"CALENDAR" | "FORM">("CALENDAR");
   const [bookingType, setBookingType] = useState<"REMOTE" | "FACE_TO_FACE">("REMOTE");
   const [duration, setDuration] = useState<number>(1.0);
-  const [title, setTitle] = useState("Private Culinary Coaching");
+  const [title, setTitle] = useState("Kitchen Cost & 2% Wastage Turnaround");
   const [date, setDate] = useState(() => {
     const d = new Date();
     d.setDate(d.getDate() + 2);
@@ -40,38 +47,65 @@ export const BookingView: React.FC<BookingViewProps> = ({
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Direct Form 15-Minute Hold & Payment Choice State
+  const [formStep, setFormStep] = useState<"PICK_DATETIME" | "HOLD_PAYMENT">("PICK_DATETIME");
+  const [holdSeconds, setHoldSeconds] = useState<number>(HOLD_DURATION_SECONDS);
+  const [isMpesaOpen, setIsMpesaOpen] = useState(false);
+
+  useEffect(() => {
+    if (formStep !== "HOLD_PAYMENT") return;
+    const timer = setInterval(() => {
+      setHoldSeconds((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [formStep]);
+
+  const formatCountdown = (s: number) => {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+  };
+
+  // Step 1: Secure Date & Time first (starts 15-minute lock timer)
+  const handleSecureFormSlot = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!dbUser) {
-      onOpenAuth();
-      return;
-    }
-
-    setLoading(true);
     setSuccessMsg(null);
+    setHoldSeconds(HOLD_DURATION_SECONDS);
+    setFormStep("HOLD_PAYMENT");
+  };
 
+  // Step 2: Finalize booking either via Upfront M-Pesa (Kshs. 200) or Pay Later
+  const finalizeFormBooking = async (paymentOption: "UPFRONT" | "PAY_LATER") => {
+    setLoading(true);
     try {
       const scheduledAt = new Date(`${date}T${time}:00Z`).toISOString();
+      const paymentNote =
+        paymentOption === "UPFRONT"
+          ? `Paid Upfront: Kshs. ${CONSULTATION_FEE_KES} via M-Pesa`
+          : `Pay Later: Kshs. ${CONSULTATION_FEE_KES} due before/at session`;
+
       const res = await fetch("/api/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: dbUser.id,
+          userId: dbUser?.id || null,
           type: bookingType,
+          status: paymentOption === "UPFRONT" ? "CONFIRMED" : "PENDING_PAYMENT",
           title,
           durationHours: duration,
           scheduledAt,
-          notes,
+          notes: notes ? `${notes} | ${paymentNote}` : paymentNote,
         }),
       });
 
       if (!res.ok) throw new Error("Failed to book consultation");
 
       setSuccessMsg(
-        bookingType === "REMOTE"
-          ? `Remote consultation booked for ${duration}h! This will be included in the 5% monthly raffle pool.`
-          : `Face-to-face consultation confirmed for ${duration}h.`
+        paymentOption === "UPFRONT"
+          ? `Appointment locked in & paid (Kshs. ${CONSULTATION_FEE_KES}) for ${date} at ${time}!`
+          : `Appointment locked in for ${date} at ${time}! You chose Pay Later (Kshs. ${CONSULTATION_FEE_KES}).`
       );
+      setFormStep("PICK_DATETIME");
       if (onBookingCreated) onBookingCreated();
     } catch (err: unknown) {
       alert(err instanceof Error ? err.message : "Booking error");
@@ -81,18 +115,23 @@ export const BookingView: React.FC<BookingViewProps> = ({
   };
 
   return (
-    <div className="space-y-6 pb-24">
+    <div className="space-y-5 pb-24">
       {/* Header */}
-      <div>
-        <span className="text-[11px] uppercase tracking-widest font-bold text-brand-400">
-          Personalized Mentorship
+      <div className="flex items-start justify-between gap-2">
+        <div>
+          <span className="text-[11px] uppercase tracking-widest font-bold text-brand-400">
+            Turnaround & Recruitment Consultations
+          </span>
+          <h2 className="text-xl sm:text-2xl font-black text-white mt-0.5">
+            Book a Chef Consultation
+          </h2>
+          <p className="text-xs text-slate-400 mt-0.5">
+            1. Secure an available date & time first • 2. 15-min hold • 3. Pay Kshs. 200 upfront or later.
+          </p>
+        </div>
+        <span className="px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-black shrink-0">
+          Kshs. {CONSULTATION_FEE_KES}
         </span>
-        <h2 className="text-2xl font-black text-white mt-0.5">
-          Book a Chef Consultation
-        </h2>
-        <p className="text-xs text-slate-400 mt-1">
-          Select between live interactive remote video sessions or exclusive in-kitchen face-to-face masterclasses.
-        </p>
       </div>
 
       {/* Booking Mode Switcher */}
@@ -107,7 +146,7 @@ export const BookingView: React.FC<BookingViewProps> = ({
           }`}
         >
           <Calendar className="w-3.5 h-3.5" />
-          <span>Interactive Calendar</span>
+          <span>Interactive Slot Picker</span>
         </button>
 
         <button
@@ -120,11 +159,17 @@ export const BookingView: React.FC<BookingViewProps> = ({
           }`}
         >
           <Clock className="w-3.5 h-3.5" />
-          <span>Direct Form</span>
+          <span>Custom Date & Time</span>
         </button>
       </div>
 
-      {/* Interactive Google Appointment Schedule with Transparent Intercept Overlay */}
+      {successMsg && (
+        <div className="p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs flex items-center space-x-2">
+          <CheckCircle className="w-4 h-4 shrink-0 text-emerald-400" />
+          <span>{successMsg}</span>
+        </div>
+      )}
+
       {bookingMode === "CALENDAR" ? (
         <BookingCalendar
           onOpenAuth={onOpenAuth}
@@ -132,201 +177,195 @@ export const BookingView: React.FC<BookingViewProps> = ({
         />
       ) : (
         <>
-          {/* Community Raffle Highlight Notice */}
-          <div className="p-3.5 rounded-2xl bg-gradient-to-r from-brand-950/70 to-chef-card border border-brand-500/30 flex items-start space-x-3 shadow-lg">
-            <div className="w-8 h-8 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center shrink-0 mt-0.5">
-              <Sparkles className="w-4 h-4" />
-            </div>
-            <div>
-              <h4 className="text-xs font-bold text-white flex items-center space-x-1.5">
-                <span>5% Community Giveback Policy</span>
-              </h4>
-              <p className="text-[11px] text-slate-300 mt-1 leading-relaxed">
-                Every <strong>Remote consultation</strong> hour booked automatically adds <strong>5%</strong> towards our monthly community pool, gifting free 1-hour sessions to aspiring foodies!
-              </p>
-            </div>
-          </div>
-
-          {/* Booking Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Remote vs Face-to-Face Switcher */}
-        <div>
-          <label className="block text-xs font-semibold text-slate-300 mb-2">
-            Consultation Format
-          </label>
-          <div className="grid grid-cols-2 gap-3">
-            {/* Remote Card */}
-            <button
-              type="button"
-              onClick={() => setBookingType("REMOTE")}
-              className={`p-3.5 rounded-2xl border text-left transition-all ${
-                bookingType === "REMOTE"
-                  ? "bg-brand-500/15 border-brand-500 shadow-glow"
-                  : "bg-chef-card border-white/5 opacity-70 hover:opacity-100"
-              }`}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <div
-                  className={`w-8 h-8 rounded-xl flex items-center justify-center ${
+          {formStep === "PICK_DATETIME" ? (
+            <form onSubmit={handleSecureFormSlot} className="space-y-4">
+              {/* Remote vs Face-to-Face Switcher */}
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setBookingType("REMOTE")}
+                  className={`p-3.5 rounded-2xl border text-left transition-all ${
                     bookingType === "REMOTE"
-                      ? "bg-brand-500 text-white"
-                      : "bg-white/5 text-slate-400"
+                      ? "bg-brand-500/15 border-brand-500 shadow-glow"
+                      : "bg-chef-card border-white/5 opacity-70 hover:opacity-100"
                   }`}
                 >
-                  <Video className="w-4 h-4" />
-                </div>
-                {bookingType === "REMOTE" && (
-                  <span className="text-[9px] font-black uppercase tracking-wider text-brand-400 bg-brand-500/20 px-1.5 py-0.5 rounded">
-                    5% Raffle Pool
-                  </span>
-                )}
-              </div>
-              <h4 className="text-sm font-bold text-white">Remote Video</h4>
-              <p className="text-[10px] text-slate-400 mt-0.5">
-                1-on-1 HD Video & Recipe review
-              </p>
-            </button>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="w-8 h-8 rounded-xl bg-brand-500 text-white flex items-center justify-center">
+                      <Video className="w-4 h-4" />
+                    </div>
+                    <span className="text-[10px] font-black text-brand-300">
+                      Kshs. {CONSULTATION_FEE_KES}
+                    </span>
+                  </div>
+                  <h4 className="text-xs font-bold text-white">Remote Video</h4>
+                </button>
 
-            {/* Face to Face Card */}
-            <button
-              type="button"
-              onClick={() => setBookingType("FACE_TO_FACE")}
-              className={`p-3.5 rounded-2xl border text-left transition-all ${
-                bookingType === "FACE_TO_FACE"
-                  ? "bg-emerald-500/15 border-emerald-500 shadow-lg"
-                  : "bg-chef-card border-white/5 opacity-70 hover:opacity-100"
-              }`}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <div
-                  className={`w-8 h-8 rounded-xl flex items-center justify-center ${
+                <button
+                  type="button"
+                  onClick={() => setBookingType("FACE_TO_FACE")}
+                  className={`p-3.5 rounded-2xl border text-left transition-all ${
                     bookingType === "FACE_TO_FACE"
-                      ? "bg-emerald-500 text-white"
-                      : "bg-white/5 text-slate-400"
+                      ? "bg-emerald-500/15 border-emerald-500 shadow-lg"
+                      : "bg-chef-card border-white/5 opacity-70 hover:opacity-100"
                   }`}
                 >
-                  <MapPin className="w-4 h-4" />
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="w-8 h-8 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center">
+                      <MapPin className="w-4 h-4" />
+                    </div>
+                    <span className="text-[10px] font-black text-emerald-300">
+                      Kshs. {CONSULTATION_FEE_KES}
+                    </span>
+                  </div>
+                  <h4 className="text-xs font-bold text-white">On-Site Audit</h4>
+                </button>
+              </div>
+
+              {/* Date & Time */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    Preferred Date
+                  </label>
+                  <input
+                    type="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    Time Slot
+                  </label>
+                  <input
+                    type="time"
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white"
+                    required
+                  />
                 </div>
               </div>
-              <h4 className="text-sm font-bold text-white">Face-to-Face</h4>
-              <p className="text-[10px] text-slate-400 mt-0.5">
-                In-kitchen live chef demonstration
-              </p>
-            </button>
-          </div>
-        </div>
 
-        {/* Duration Selector */}
-        <div>
-          <label className="block text-xs font-semibold text-slate-300 mb-2">
-            Duration (Hours)
-          </label>
-          <div className="grid grid-cols-4 gap-2">
-            {[1.0, 1.5, 2.0, 3.0].map((h) => (
+              {/* Focus Topic */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Focus Topic
+                </label>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white"
+                  required
+                />
+              </div>
+
+              {/* Notes */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Venue / Turnaround Notes (Optional)
+                </label>
+                <textarea
+                  rows={2}
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Describe your kitchen setup or staffing needs..."
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white"
+                />
+              </div>
+
               <button
-                key={h}
-                type="button"
-                onClick={() => setDuration(h)}
-                className={`py-2.5 rounded-xl text-xs font-bold transition-all ${
-                  duration === h
-                    ? "bg-brand-500 text-white shadow-md"
-                    : "bg-chef-card border border-white/5 text-slate-300 hover:bg-white/5"
-                }`}
+                type="submit"
+                className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-brand-500 to-brand-600 text-white font-bold text-xs shadow-xl flex items-center justify-center space-x-2"
               >
-                {h} {h === 1 ? "Hour" : "Hours"}
+                <span>Secure {date} @ {time} (Start 15-Min Hold)</span>
+                <ChevronRight className="w-4 h-4" />
               </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Date & Time */}
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-              Preferred Date
-            </label>
-            <div className="relative">
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-brand-500"
-                required
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-              Time Slot
-            </label>
-            <input
-              type="time"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-brand-500"
-              required
-            />
-          </div>
-        </div>
-
-        {/* Consultation Focus */}
-        <div>
-          <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-            Focus Topic
-          </label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="e.g. Pastry Lamination, Knife Skills, Sauce Chemistry"
-            className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500"
-            required
-          />
-        </div>
-
-        {/* Notes */}
-        <div>
-          <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-            Special Requests or Dietary Focus (Optional)
-          </label>
-          <textarea
-            rows={2}
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder="Describe your kitchen setup, equipment, or culinary goals..."
-            className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500"
-          />
-        </div>
-
-        {/* Success Alert */}
-        {successMsg && (
-          <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs flex items-center space-x-2">
-            <CheckCircle className="w-4 h-4 shrink-0" />
-            <span>{successMsg}</span>
-          </div>
-        )}
-
-        {/* Submit */}
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white font-bold text-sm shadow-xl shadow-brand-500/25 flex items-center justify-center space-x-2 transition-all active:scale-[0.99] disabled:opacity-50"
-        >
-          {loading ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Confirming Consultation...</span>
-            </>
+            </form>
           ) : (
-            <>
-              <span>Book {duration}h {bookingType === "REMOTE" ? "Remote" : "In-Person"} Session</span>
-              <ChevronRight className="w-4 h-4" />
-            </>
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-5 rounded-3xl bg-chef-card border border-amber-500/40 space-y-4"
+            >
+              <div className="p-3 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Timer className="w-4 h-4 text-amber-400" />
+                  <span className="text-xs font-bold text-white">
+                    Slot Held for 15 Minutes ({date} @ {time})
+                  </span>
+                </div>
+                <span className="font-mono font-black text-sm text-amber-300">
+                  {formatCountdown(holdSeconds)}
+                </span>
+              </div>
+
+              <div className="space-y-2.5">
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={() => {
+                    if (!dbUser) {
+                      onOpenAuth();
+                      return;
+                    }
+                    setIsMpesaOpen(true);
+                  }}
+                  className="w-full py-3.5 px-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center justify-between"
+                >
+                  <span className="flex items-center gap-2">
+                    <Smartphone className="w-4 h-4" />
+                    Pay Upfront via M-Pesa
+                  </span>
+                  <span>Kshs. {CONSULTATION_FEE_KES}</span>
+                </button>
+
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={() => finalizeFormBooking("PAY_LATER")}
+                  className="w-full py-3.5 px-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 text-white font-bold text-xs flex items-center justify-between"
+                >
+                  <span className="flex items-center gap-2">
+                    <CreditCard className="w-4 h-4 text-amber-400" />
+                    Lock In Slot & Pay Later
+                  </span>
+                  <span className="text-amber-300">
+                    Kshs. {CONSULTATION_FEE_KES} Later →
+                  </span>
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setFormStep("PICK_DATETIME")}
+                className="text-[11px] text-slate-400 hover:text-white underline block mx-auto"
+              >
+                ← Change Date or Time
+              </button>
+            </motion.div>
           )}
-        </button>
-      </form>
         </>
+      )}
+
+      {isMpesaOpen && (
+        <MpesaModal
+          isOpen={isMpesaOpen}
+          onClose={() => setIsMpesaOpen(false)}
+          title={`${title} (${date} @ ${time})`}
+          amount={CONSULTATION_FEE_KES}
+          transactionType="CONSULTATION_BOOKING"
+          onSuccess={async () => {
+            setIsMpesaOpen(false);
+            await refreshDbUser();
+            await finalizeFormBooking("UPFRONT");
+          }}
+        />
       )}
     </div>
   );

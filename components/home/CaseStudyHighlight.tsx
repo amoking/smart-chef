@@ -6,7 +6,6 @@ import {
   TrendingUp,
   Store,
   Building2,
-  ChefHat,
   Scale,
   ClipboardCheck,
   Sparkles,
@@ -21,6 +20,7 @@ import {
   Clock,
   ShieldCheck,
   FileCheck2,
+  UtensilsCrossed,
 } from "lucide-react";
 
 export interface TurnaroundShowcasePhoto {
@@ -32,26 +32,25 @@ export interface TurnaroundShowcasePhoto {
 
 export const TURNAROUND_IMAGES: TurnaroundShowcasePhoto[] = [
   {
-    src: "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=900&q=80",
-    title: "Hotel & Resort Brigades",
-    tag: "Large Scale",
+    src: "/images/kenya-estate-catering.jpg",
+    title: "Estate Kitchens & Outside Caterers",
+    tag: "Kitchen Control",
     metric: "≤ 2% Food Wastage",
   },
   {
-    src: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=900&q=80",
-    title: "Service & Sales Speed",
-    tag: "Front of House",
+    src: "/images/kenya-estate-service.jpg",
+    title: "Local Cafés & Neighborhood Eateries",
+    tag: "Service & Speed",
     metric: "3-Week Turnaround",
   },
   {
-    src: "https://images.unsplash.com/photo-1581349485608-9469926a8e5e?auto=format&fit=crop&w=900&q=80",
-    title: "Zero-Excuse Stores & Stock",
-    tag: "Inventory Control",
+    src: "/images/kenya-catering-stores.jpg",
+    title: "Unga, Oil & Market Stock Control",
+    tag: "Zero-Excuse Stores",
     metric: "100% Accountability",
   },
 ];
 
-// Exported alias for backwards compatibility
 export const EXPEDITION_IMAGES = TURNAROUND_IMAGES;
 
 const BUSINESS_STAGES = [
@@ -96,8 +95,8 @@ const MANIFESTO_METRICS = [
   },
   {
     icon: FileCheck2,
-    value: "Day 1",
-    label: "On-Ground Audit",
+    value: "Kshs. 200",
+    label: "Consultation Slot",
     color: "text-sky-400",
   },
 ];
@@ -151,7 +150,7 @@ export const CaseStudyHighlight: React.FC = () => {
           <span className="bg-gradient-to-r from-brand-400 via-amber-300 to-emerald-400 bg-clip-text text-transparent">
             Struggling, Establishing & Stagnating
           </span>{" "}
-          Food Businesses Thrive
+          Catering Businesses Thrive
         </h2>
 
         {/* 3 Stage Visual Pills: Struggling | Establishing | Stagnating */}
@@ -183,65 +182,23 @@ export const CaseStudyHighlight: React.FC = () => {
       </div>
 
       {/* =====================================================================
-          2. SPLIT-SCREEN JUXTAPOSITION: BUSINESSES SMALL & LARGE IN KENYA
+          2. SPLIT-SCREEN JUXTAPOSITION:
+             Left: Local Kenyan Estate Catering & Small Food Outlets (Primary Focus)
+             Right: One Upmarket Nairobi City Centre Showcase
          ===================================================================== */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 items-stretch relative z-10">
-        {/* LEFT: SMALL & ESTABLISHING KENYAN FOOD OUTLETS */}
+        {/* LEFT: LOCAL KENYAN ESTATE CATERING & SMALL BUSINESSES (Grid / Slider) */}
         <motion.div
           initial={{ opacity: 0, x: -12 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.4 }}
-          className="group relative rounded-2xl overflow-hidden border border-amber-500/35 bg-black/50 flex flex-col justify-between min-h-[250px] sm:min-h-[285px] shadow-xl"
-        >
-          <img
-            src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=900&q=80"
-            alt="Small and establishing Kenyan food outlet kitchen"
-            className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-black/25" />
-
-          <div className="relative z-10 p-3 flex items-center justify-between gap-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md border border-amber-500/40 text-[10px] font-extrabold text-amber-300">
-              <Store className="w-3 h-3 text-amber-400" />
-              <span>Small & Emerging Outlets</span>
-            </span>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/65 backdrop-blur-md text-[9px] font-bold text-slate-200 border border-white/10">
-              <MapPin className="w-2.5 h-2.5 text-amber-400" />
-              Cafés & Local Kitchens
-            </span>
-          </div>
-
-          <div className="relative z-10 p-3.5 space-y-2">
-            <h3 className="text-sm font-black text-white">
-              Cafés, Fast-Casual & Startup Caterers
-            </h3>
-            <div className="flex flex-wrap gap-1.5">
-              <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-lg bg-amber-500/25 text-amber-200 border border-amber-500/40">
-                <Scale className="w-2.5 h-2.5" /> Portion Control
-              </span>
-              <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-lg bg-black/65 text-slate-200 border border-white/15">
-                <ClipboardCheck className="w-2.5 h-2.5 text-emerald-400" /> Standard Recipes
-              </span>
-              <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-lg bg-black/65 text-slate-200 border border-white/15">
-                Affordable Rates
-              </span>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* RIGHT: LARGE HOTELS, RESORTS & INSTITUTIONS (Grid / Slider) */}
-        <motion.div
-          initial={{ opacity: 0, x: 12 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.4, delay: 0.08 }}
-          className="rounded-2xl border border-emerald-500/35 bg-black/45 p-3 flex flex-col justify-between space-y-2.5 shadow-xl"
+          className="rounded-2xl border border-emerald-500/40 bg-black/45 p-3 flex flex-col justify-between space-y-2.5 shadow-xl"
         >
           <div className="flex items-center justify-between gap-2">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-[10px] font-extrabold text-emerald-300">
-              <Building2 className="w-3 h-3 text-emerald-400" />
-              <span>Large Hotels & Institutions</span>
+              <Store className="w-3 h-3 text-emerald-400" />
+              <span>Estate Caterers & Local Outlets</span>
             </span>
 
             <div className="flex items-center bg-black/60 p-0.5 rounded-xl border border-white/10">
@@ -282,7 +239,7 @@ export const CaseStudyHighlight: React.FC = () => {
                     setGalleryMode("carousel");
                   }}
                   className={`group relative rounded-xl overflow-hidden border border-white/15 cursor-pointer ${
-                    index === 0 ? "col-span-2 h-28 sm:h-32" : "col-span-1 h-32 sm:h-36"
+                    index === 0 ? "col-span-2 h-32 sm:h-36" : "col-span-1 h-32 sm:h-36"
                   }`}
                 >
                   <img
@@ -290,7 +247,7 @@ export const CaseStudyHighlight: React.FC = () => {
                     alt={img.title}
                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
                   <span className="absolute top-1.5 left-1.5 text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-black/75 text-emerald-300 border border-emerald-500/30">
                     {img.metric}
                   </span>
@@ -303,7 +260,7 @@ export const CaseStudyHighlight: React.FC = () => {
               ))}
             </div>
           ) : (
-            <div className="relative rounded-xl overflow-hidden border border-emerald-500/30 bg-black/60 h-60 sm:h-68 flex flex-col justify-between">
+            <div className="relative rounded-xl overflow-hidden border border-emerald-500/30 bg-black/60 h-64 sm:h-72 flex flex-col justify-between">
               <AnimatePresence mode="wait">
                 <motion.img
                   key={TURNAROUND_IMAGES[activeSlide].src}
@@ -355,10 +312,54 @@ export const CaseStudyHighlight: React.FC = () => {
             </div>
           )}
         </motion.div>
+
+        {/* RIGHT: ONE UPMARKET (CITY CENTRE) SHOWCASE */}
+        <motion.div
+          initial={{ opacity: 0, x: 12 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, delay: 0.08 }}
+          className="group relative rounded-2xl overflow-hidden border border-amber-500/35 bg-black/50 flex flex-col justify-between min-h-[260px] sm:min-h-[300px] shadow-xl"
+        >
+          <img
+            src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80"
+            alt="Upmarket Nairobi City Centre restaurant and hotel dining showcase"
+            className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-black/25" />
+
+          <div className="relative z-10 p-3 flex items-center justify-between gap-2">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md border border-amber-500/40 text-[10px] font-extrabold text-amber-300">
+              <Building2 className="w-3 h-3 text-amber-400" />
+              <span>Upmarket City Centre Showcase</span>
+            </span>
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/65 backdrop-blur-md text-[9px] font-bold text-slate-200 border border-white/10">
+              <MapPin className="w-2.5 h-2.5 text-amber-400" />
+              Nairobi CBD & Hotels
+            </span>
+          </div>
+
+          <div className="relative z-10 p-3.5 space-y-2">
+            <h3 className="text-sm font-black text-white">
+              City Centre Restaurants, Hotels & Large Establishments
+            </h3>
+            <div className="flex flex-wrap gap-1.5">
+              <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-lg bg-amber-500/25 text-amber-200 border border-amber-500/40">
+                <UtensilsCrossed className="w-2.5 h-2.5" /> High-Volume Controls
+              </span>
+              <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-lg bg-black/65 text-slate-200 border border-white/15">
+                <ClipboardCheck className="w-2.5 h-2.5 text-emerald-400" /> Permanent Report
+              </span>
+              <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-lg bg-black/65 text-slate-200 border border-white/15">
+                Follow-Up Audits
+              </span>
+            </div>
+          </div>
+        </motion.div>
       </div>
 
       {/* =====================================================================
-          3. MANIFESTO METRICS BAR (18+ Yrs • ≤ 2% Wastage • 3 Weeks • Day 1 Audit)
+          3. MANIFESTO METRICS BAR (18+ Yrs • ≤ 2% Wastage • 3 Weeks • Kshs. 200)
          ===================================================================== */}
       <div className="grid grid-cols-4 gap-2 relative z-10">
         {MANIFESTO_METRICS.map((m) => {
